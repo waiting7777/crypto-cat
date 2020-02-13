@@ -7,7 +7,10 @@
   "author": "waiting7777 <waiting0819@msn.com>",
   "license": "MIT",
   "dependencies": {
-    "crypto-node-api": "^1.0.2",
-    "dotenv": "^8.2.0"
+    "cron": "^1.8.2",
+    "crypto-node-api": "^1.0.5",
+    "dayjs": "^1.8.20",
+    "dotenv": "^8.2.0",
+    "winston": "^3.2.1"
   }
 }
