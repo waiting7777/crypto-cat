@@ -10,18 +10,20 @@ const binance = new crypto.Binance({
 
 async function main() {
   const assets = await binance.getAccountInfo()
-  const BTC = assets.balances.filter(v => v.asset === 'BTC')[0].free
   const LINK = assets.balances.filter(v => v.asset === 'LINK')[0].free
-  const ticker = await binance.getOrderBookTicker('LINKBTC')
+  const ETH = assets.balances.filter(v => v.asset === 'ETH')[0].free
+  const ticker = await binance.getOrderBookTicker('LINKETH')
   const price = (Number(ticker.bidPrice) + Number(ticker.askPrice)) / 2
-  const div = Math.floor(BTC / price) - LINK
-  logger.info(`[BTC: ${BTC}] [LINK: ${LINK}] [PRICE: ${price}] [DIV: ${div}] [${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)
-  if (Math.abs(div) > Math.ceil(LINK / 50)) {
+  const div = Math.floor(ETH / price) - Math.floor(LINK)
+  logger.info(`[LINK: ${LINK}] [ETH: ${ETH}] [PRICE: ${price.toFixed(8)}] [DIV: ${div}] [${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)
+  if (Math.abs(div) > Math.ceil(ETH / 50)) {
     if (div > 0) {
-      const res = await binance.doLimitOrder('LINKBTC', 'BUY', Math.floor(Math.floor(div / 2)), ticker.askPrice)
+      const res = await binance.doLimitOrder('LINKETH', 'BUY', Math.floor(Math.floor(div / 2)), ticker.askPrice)
+      // console.log(`[BUY] [PRCIE: ${ticker.askPrice}] [QUANT: ${Math.floor(Math.abs(div) / 2)}]`)
       logger.warn(`[BUY] [PRCIE: ${ticker.askPrice}] [QUANT: ${Math.floor(Math.abs(div) / 2)}] [STATUS: ${res.status}]`)
     } else {
-      const res = await binance.doLimitOrder('LINKBTC', 'SELL', Math.floor(Math.abs(div) / 2), ticker.bidPrice)
+      const res = await binance.doLimitOrder('LINKETH', 'SELL', Math.floor(Math.abs(div) / 2), ticker.bidPrice)
+      // console.log(`[SELL] [PRCIE: ${ticker.bidPrice}] [QUANT: ${Math.floor(Math.abs(div) / 2)}]`)
       logger.warn(`[SELL] [PRCIE: ${ticker.bidPrice}] [QUANT: ${Math.floor(Math.abs(div) / 2)}] [STATUS: ${res.status}]`)
     }
   }
@@ -30,3 +32,5 @@ async function main() {
 const job = new CronJon('0 */5 * * * *', main)
 
 job.start()
+
+main()
